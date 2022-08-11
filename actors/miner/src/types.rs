@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 use super::beneficiary::*;
+use std::cmp::min;
 use crate::commd::CompactCommD;
 use cid::Cid;
-use fil_actors_runtime::DealWeight;
+use fil_actors_runtime::{network, DealWeight};
 use fvm_ipld_bitfield::UnvalidatedBitField;
 use fvm_ipld_encoding::tuple::*;
 use fvm_ipld_encoding::{serde_bytes, BytesDe, Cbor};
 use fvm_shared::address::Address;
 use fvm_shared::bigint::bigint_ser;
-use fvm_shared::clock::ChainEpoch;
+use fvm_shared::clock::{ChainEpoch, QuantSpec};
 use fvm_shared::deal::DealID;
 use fvm_shared::econ::TokenAmount;
 use fvm_shared::randomness::Randomness;
@@ -19,6 +20,7 @@ use fvm_shared::sector::{
     StoragePower,
 };
 use fvm_shared::smooth::FilterEstimate;
+use std::cmp::min;
 
 pub type CronEvent = i64;
 
@@ -330,6 +332,32 @@ pub struct SectorOnChainInfo {
     /// The original SealedSectorCID, only gets set on the first ReplicaUpdate
     pub sector_key_cid: Option<Cid>,
 }
+
+impl SectorOnChainInfo {
+    pub fn possible_proof_expirations(&self, now: ChainEpoch) -> Vec<ChainEpoch> {
+        let delta_e = network::EPOCHS_IN_YEAR; // TODO correct value
+        if now - self.activation < network::EPOCHS_IN_YEAR / 2 {
+            return vec![std::min(
+                self.expiration,
+                self.activation + network::EPOCHS_IN_YEAR + network::EPOCHS_IN_YEAR / 2,
+            )];
+        }
+
+        let quant =
+            QuantSpec { unit: delta_e, offset: self.activation + network::EPOCHS_IN_YEAR / 2 };
+        let e1 = quant.quantize_up(now);
+        let e2 = e1 + delta_e;
+
+        if self.expiration < e1 {
+            vec![self.expiration]
+        } else if self.expiration < e2 {
+            vec![e1, self.expiration]
+        } else {
+            veec![e1, e2]
+        }
+    }
+}
+
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Serialize_tuple, Deserialize_tuple)]
 pub struct Fault {
