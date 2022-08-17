@@ -1056,7 +1056,7 @@ impl Actor {
                 ext::market::ACTIVATE_DEALS_METHOD,
                 RawBytes::serialize(ext::market::ActivateDealsParams {
                     deal_ids: update.deals.clone(),
-                    sector_expiry: sector_info.expiration,
+                    sector_expiry: sector_info.commitment_expiration,
                 })?,
                 TokenAmount::zero(),
             );
@@ -1072,7 +1072,7 @@ impl Actor {
                 continue;
             };
 
-            let expiration = sector_info.expiration;
+            let expiration = sector_info.commitment_expiration;
             let seal_proof = sector_info.seal_proof;
             validated_updates.push(UpdateAndSectorInfo {
                 update,
@@ -1220,7 +1220,7 @@ impl Actor {
                     new_sector_info.verified_deal_weight = with_details.deal_weights.verified_deal_weight.clone();
 
                     // compute initial pledge
-                    let duration = with_details.sector_info.expiration - rt.curr_epoch();
+                    let duration = with_details.sector_info.commitment_expiration - rt.curr_epoch();
 
                     let qa_pow = qa_power_for_weight(
                         info.sector_size,
@@ -1772,7 +1772,7 @@ impl Actor {
             // This could make sector maximum lifetime validation more lenient if the maximum sector limit isn't hit first.
             let max_activation = curr_epoch
                 + max_prove_commit_duration(rt.policy(), precommit.seal_proof).unwrap_or_default();
-            validate_expiration(rt, max_activation, precommit.expiration, precommit.seal_proof)?;
+            validate_commitment_expiration(rt, max_activation, precommit.expiration, precommit.seal_proof)?;
 
             sectors_deals.push(ext::market::SectorDeals {
                 sector_type: precommit.seal_proof,
@@ -2266,26 +2266,26 @@ impl Actor {
 
                             // This can happen if the sector should have already expired, but hasn't
                             // because the end of its deadline hasn't passed yet.
-                            if sector.expiration < rt.curr_epoch() {
+                            if sector.commitment_expiration < rt.curr_epoch() {
                                 return Err(actor_error!(
                                     forbidden,
                                     "cannot extend expiration for expired sector {} at {}",
                                     sector.sector_number,
-                                    sector.expiration
+                                    sector.commitment_expiration
                                 ));
                             }
 
-                            if decl.new_expiration < sector.expiration {
+                            if decl.new_expiration < sector.commitment_expiration {
                                 return Err(actor_error!(
                                     illegal_argument,
                                     "cannot reduce sector {} expiration to {} from {}",
                                     sector.sector_number,
                                     decl.new_expiration,
-                                    sector.expiration
+                                    sector.commitment_expiration
                                 ));
                             }
 
-                            validate_expiration(
+                            validate_commitment_expiration(
                                 rt,
                                 sector.activation,
                                 decl.new_expiration,
@@ -2294,15 +2294,19 @@ impl Actor {
 
                             // Remove "spent" deal weights
                             let new_deal_weight = (&sector.deal_weight
-                                * (sector.expiration - curr_epoch))
-                                .div_floor(&BigInt::from(sector.expiration - sector.activation));
+                                * (sector.commitment_expiration - curr_epoch))
+                                .div_floor(&BigInt::from(
+                                    sector.commitment_expiration - sector.activation,
+                                ));
 
                             let new_verified_deal_weight = (&sector.verified_deal_weight
-                                * (sector.expiration - curr_epoch))
-                                .div_floor(&BigInt::from(sector.expiration - sector.activation));
+                                * (sector.commitment_expiration - curr_epoch))
+                                .div_floor(&BigInt::from(
+                                    sector.commitment_expiration - sector.activation,
+                                ));
 
                             let mut sector = sector.clone();
-                            sector.expiration = decl.new_expiration;
+                            sector.commitment_expiration = decl.new_expiration;
 
                             sector.deal_weight = new_deal_weight;
                             sector.verified_deal_weight = new_verified_deal_weight;
@@ -3852,7 +3856,7 @@ where
 }
 
 /// Check expiry is exactly *the epoch before* the start of a proving period.
-fn validate_expiration<BS, RT>(
+fn validate_commitment_expiration<BS, RT>(
     rt: &RT,
     activation: ChainEpoch,
     expiration: ChainEpoch,
@@ -3875,24 +3879,24 @@ where
     }
 
     // expiration cannot be less than minimum after activation
-    if expiration - activation < policy.min_sector_expiration {
+    if expiration - activation < policy.min_sector_commitment {
         return Err(actor_error!(
             illegal_argument,
             "invalid expiration {}, total sector lifetime ({}) must exceed {} after activation {}",
             expiration,
             expiration - activation,
-            policy.min_sector_expiration,
+            policy.min_sector_commitment,
             activation
         ));
     }
 
     // expiration cannot exceed MaxSectorExpirationExtension from now
-    if expiration > rt.curr_epoch() + policy.max_sector_expiration_extension {
+    if expiration > rt.curr_epoch() + policy.max_sector_commitment_extension {
         return Err(actor_error!(
             illegal_argument,
             "invalid expiration {}, cannot be more than {} past current epoch {}",
             expiration,
-            policy.max_sector_expiration_extension,
+            policy.max_sector_commitment_extension,
             rt.curr_epoch()
         ));
     }
@@ -4604,10 +4608,10 @@ where
             let duration = pre_commit.info.expiration - activation;
 
             // This should have been caught in precommit, but don't let other sectors fail because of it.
-            if duration < policy.min_sector_expiration {
+            if duration < policy.min_sector_commitment {
                 warn!(
                     "precommit {} has lifetime {} less than minimum {}. ignoring",
-                    pre_commit.info.sector_number, duration, policy.min_sector_expiration,
+                    pre_commit.info.sector_number, duration, policy.min_sector_commitment,
                 );
                 continue;
             }
@@ -4652,7 +4656,8 @@ where
                 seal_proof: pre_commit.info.seal_proof,
                 sealed_cid: pre_commit.info.sealed_cid,
                 deal_ids: pre_commit.info.deal_ids,
-                expiration: pre_commit.info.expiration,
+                commitment_expiration: pre_commit.info.expiration,
+                proof_expiration: activation + policy.max_proof_validity,
                 activation,
                 deal_weight: deal_weights.deal_weight,
                 verified_deal_weight: deal_weights.verified_deal_weight,

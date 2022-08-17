@@ -598,7 +598,6 @@ impl<'db, BS: Blockstore> ExpirationQueue<'db, BS> {
 
     /// Removes and aggregates entries from the queue up to and including some epoch.
     pub fn pop_until(&mut self, until: ChainEpoch) -> anyhow::Result<ExpirationSet> {
-
         let mut result = ExpirationSet::empty();
         let mut popped_keys = Vec::<u64>::new();
 
@@ -780,7 +779,7 @@ impl<'db, BS: Blockstore> ExpirationQueue<'db, BS> {
             Vec::<SectorExpirationSet>::with_capacity(declared_expirations.len());
 
         for sector in sectors {
-            let q_expiration = self.quant.quantize_up(sector.expiration);
+            let q_expiration = self.quant.quantize_up(sector.commitment_expiration);
             declared_expirations.insert(q_expiration, true);
             all_remaining.insert(sector.sector_number);
             sectors_by_number.insert(sector.sector_number, sector);
@@ -875,7 +874,7 @@ fn group_new_sectors_by_declared_expiration<'a>(
     let mut sectors_by_expiration = BTreeMap::<ChainEpoch, Vec<&SectorOnChainInfo>>::new();
 
     for sector in sectors {
-        let q_expiration = quant.quantize_up(sector.expiration);
+        let q_expiration = quant.quantize_up(sector.commitment_expiration);
         sectors_by_expiration.entry(q_expiration).or_default().push(sector);
     }
 
