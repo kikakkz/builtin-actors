@@ -1772,7 +1772,12 @@ impl Actor {
             // This could make sector maximum lifetime validation more lenient if the maximum sector limit isn't hit first.
             let max_activation = curr_epoch
                 + max_prove_commit_duration(rt.policy(), precommit.seal_proof).unwrap_or_default();
-            validate_commitment_expiration(rt, max_activation, precommit.expiration, precommit.seal_proof)?;
+            validate_commitment_expiration(
+                rt,
+                max_activation,
+                precommit.expiration,
+                precommit.seal_proof,
+            )?;
 
             sectors_deals.push(ext::market::SectorDeals {
                 sector_type: precommit.seal_proof,
