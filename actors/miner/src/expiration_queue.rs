@@ -659,6 +659,7 @@ impl<'db, BS: Blockstore> ExpirationQueue<'db, BS> {
         Ok(result)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn add(
         &mut self,
         raw_epoch: ChainEpoch,
@@ -680,6 +681,7 @@ impl<'db, BS: Blockstore> ExpirationQueue<'db, BS> {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn remove(
         &mut self,
         raw_epoch: ChainEpoch,
