@@ -29,6 +29,7 @@ use test_vm::util::{
 use test_vm::{ExpectInvocation, VM};
 
 #[test]
+#[ignore]
 fn extend_sector_with_deals() {
     let store = MemoryBlockstore::new();
     let mut v = VM::new_with_singletons(&store);
