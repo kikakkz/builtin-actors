@@ -4387,7 +4387,7 @@ where
                 sealed_cid: pre_commit.info.sealed_cid,
                 deal_ids: pre_commit.info.deal_ids,
                 commitment_expiration: pre_commit.info.expiration,
-                proof_expiration: activation + policy.max_proof_validity + 99999999999, //TODO
+                proof_expiration: activation + policy.max_proof_validity,
                 activation,
                 deal_weight: deal_weights.deal_weight,
                 verified_deal_weight: deal_weights.verified_deal_weight,
