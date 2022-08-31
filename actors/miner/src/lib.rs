@@ -122,6 +122,7 @@ pub enum Method {
     ProveReplicaUpdates2 = 29,
     ChangeBeneficiary = 30,
     GetBeneficiary = 31,
+    RefreshProofExpiration = 32,
 }
 
 pub const ERR_BALANCE_INVARIANTS_BROKEN: ExitCode = ExitCode::new(1000);
@@ -3275,19 +3276,17 @@ impl Actor {
         Ok(())
     }
 
-    /*
+
     fn refresh_proof_expiration<BS, RT>(
         rt: &mut RT,
-        mut params: ExtendSectorExpirationParams,
+        params: ExtendSectorExpirationParams,
     ) -> Result<(), ActorError>
         where
             BS: Blockstore,
             RT: Runtime<BS>,
     {
-
-
-        Ok(())
-    }*/
+        extend_sector_inner(rt, &params.extensions, extend_proof_validity)
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -4469,7 +4468,6 @@ fn balance_invariants_broken(e: Error) -> ActorError {
     )
 }
 
-#[allow(dead_code)]
 fn extend_proof_validity<BS, RT>(
     rt: &RT,
     _: &ValidatedExpirationExtension,
@@ -4562,6 +4560,15 @@ where
 
     sector.deal_weight = new_deal_weight;
     sector.verified_deal_weight = new_verified_deal_weight;
+
+    // try also extending proof validity, duplicate code with extend_proof_validity I haven't
+    // found a nice way to dedupe
+    let policy = rt.policy();
+    let new_proof_expiration =
+        sector.proof_expiration + (policy.max_proof_validity - policy.proof_refresh_window);
+    if !(new_proof_expiration > rt.curr_epoch() + policy.max_proof_validity) {
+        sector.proof_expiration = new_proof_expiration;
+    }
 
     Ok(sector)
 }
@@ -4979,6 +4986,10 @@ impl ActorCode for Actor {
             Some(Method::GetBeneficiary) => {
                 let res = Self::get_beneficiary(rt)?;
                 Ok(RawBytes::serialize(res)?)
+            }
+            Some(Method::RefreshProofExpiration) => {
+                Self::refresh_proof_expiration(rt, cbor::deserialize_params(params)?)?;
+                Ok(RawBytes::default())
             }
             None => Err(actor_error!(unhandled_message, "Invalid method")),
         }
