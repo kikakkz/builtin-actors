@@ -1100,14 +1100,17 @@ mod actor_collect {
 
             // "wait" for SettlingAt epoch
             rt.epoch = state.settling_at + 1;
-            rt.expect_send(
-                state.to,
-                METHOD_SEND,
-                Default::default(),
-                state.to_send.clone(),
-                Default::default(),
-                tc.exp_send_to,
-            );
+
+            if !tc.dont_settle {
+                rt.expect_send(
+                    state.to,
+                    METHOD_SEND,
+                    Default::default(),
+                    state.to_send.clone(),
+                    Default::default(),
+                    tc.exp_send_to,
+                );
+            }
 
             // Collect.
             rt.set_caller(*ACCOUNT_ACTOR_CODE_ID, state.from);
