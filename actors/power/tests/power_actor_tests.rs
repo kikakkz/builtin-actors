@@ -1333,7 +1333,6 @@ mod submit_porep_for_bulk_verify_tests {
         };
 
         h.submit_porep_for_bulk_verify(&mut rt, MINER, info).unwrap();
-        rt.expect_gas_charge(GAS_ON_SUBMIT_VERIFY_SEAL);
         let st: State = rt.get_state();
         let store = &rt.store;
         assert!(st.proof_validation_batch.is_some());
