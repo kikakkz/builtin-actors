@@ -1299,7 +1299,6 @@ mod cron_batch_proof_verifies_tests {
 mod submit_porep_for_bulk_verify_tests {
     use super::*;
 
-    use fil_actor_power::detail::GAS_ON_SUBMIT_VERIFY_SEAL;
     use fil_actor_power::{
         ERR_TOO_MANY_PROVE_COMMITS, MAX_MINER_PROVE_COMMITS_PER_EPOCH,
         PROOF_VALIDATION_BATCH_AMT_BITWIDTH,
