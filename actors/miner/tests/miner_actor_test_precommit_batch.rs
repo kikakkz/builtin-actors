@@ -48,6 +48,7 @@ fn assert_simple_batch(
         proving_period_offset: period_offset,
     });
     let mut rt = h.new_runtime();
+    rt.skip_verification_expectations_on_drop();
 
     let precommit_epoch = period_offset + 1;
     rt.set_epoch(precommit_epoch);
@@ -282,6 +283,8 @@ mod miner_actor_precommit_batch {
         });
 
         let mut rt = h.new_runtime();
+        rt.skip_verification_expectations_on_drop();
+
         rt.set_balance(BIG_BALANCE.clone());
         rt.set_received(TokenAmount::zero());
 
@@ -321,6 +324,8 @@ mod miner_actor_precommit_batch {
             proving_period_offset: period_offset,
         });
         let mut rt = h.new_runtime();
+        rt.skip_verification_expectations_on_drop();
+
         rt.set_balance(BIG_BALANCE.clone());
         rt.set_received(TokenAmount::zero());
 
@@ -359,6 +364,8 @@ mod miner_actor_precommit_batch {
             proving_period_offset: period_offset,
         });
         let mut rt = h.new_runtime();
+        rt.skip_verification_expectations_on_drop();
+
         rt.set_balance(BIG_BALANCE.clone());
         rt.set_received(TokenAmount::zero());
 

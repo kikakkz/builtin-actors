@@ -155,6 +155,7 @@ pub struct Expectations {
     pub expect_aggregate_verify_seals: Option<ExpectAggregateVerifySeals>,
     pub expect_replica_verify: Option<ExpectReplicaVerify>,
     pub expect_gas_charge: VecDeque<i64>,
+    pub skip_verification_on_drop: bool,
 }
 
 impl Expectations {
@@ -244,6 +245,10 @@ impl Expectations {
             "expect_gas_charge {:?}, not received",
             self.expect_gas_charge
         );
+    }
+
+    fn skip_verification_on_drop(&mut self) {
+        self.skip_verification_on_drop = true;
     }
 }
 
@@ -459,6 +464,10 @@ impl MockRuntime {
     /// Verifies that all mock expectations have been met.
     pub fn verify(&mut self) {
         self.expectations.borrow_mut().verify()
+    }
+
+    pub fn skip_verification_expectations_on_drop(&mut self) {
+        self.expectations.borrow_mut().skip_verification_on_drop();
     }
 
     /// Clears all mock expectations.
@@ -1221,7 +1230,9 @@ impl RuntimePolicy for MockRuntime {
 
 impl Drop for Expectations {
     fn drop(&mut self) {
-        self.verify();
+        if !self.skip_verification_on_drop {
+            self.verify();
+        }
     }
 }
 

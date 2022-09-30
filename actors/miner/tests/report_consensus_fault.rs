@@ -24,6 +24,8 @@ fn setup() -> (ActorHarness, MockRuntime) {
 #[test]
 fn invalid_report_rejected() {
     let (h, mut rt) = setup();
+    rt.skip_verification_expectations_on_drop();
+
     rt.set_epoch(1);
 
     let test_addr = Address::new_actor("satoshi".as_bytes());
@@ -37,6 +39,8 @@ fn invalid_report_rejected() {
 #[test]
 fn mistargeted_report_rejected() {
     let (h, mut rt) = setup();
+    rt.skip_verification_expectations_on_drop();
+
     rt.set_epoch(1);
 
     let test_addr = Address::new_actor("satoshi".as_bytes());
@@ -154,6 +158,7 @@ fn double_report_of_consensus_fault_fails() {
             }),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     // new consensus faults are forbidden until original has elapsed
@@ -172,6 +177,7 @@ fn double_report_of_consensus_fault_fails() {
             }),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     // a new consensus fault can be reported for blocks once original has expired
@@ -209,4 +215,5 @@ fn double_report_of_consensus_fault_fails() {
         ),
     );
     check_state_invariants(rt.policy(), &h.get_state(&rt), rt.store(), &rt.get_balance());
+    rt.skip_verification_expectations_on_drop();
 }

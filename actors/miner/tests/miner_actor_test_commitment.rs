@@ -112,6 +112,8 @@ mod miner_actor_test_commitment {
         let mut h = ActorHarness::new(period_offset);
         h.set_proof_type(RegisteredSealProof::StackedDRG64GiBV1);
         let mut rt = h.new_runtime();
+        rt.skip_verification_expectations_on_drop();
+
         rt.set_balance(insufficient_balance);
         rt.set_received(TokenAmount::zero());
 
@@ -169,6 +171,7 @@ mod miner_actor_test_commitment {
 
         let mut h = ActorHarness::new(period_offset);
         let mut rt = h.new_runtime();
+
         rt.set_balance(BIG_BALANCE.clone());
         rt.set_received(TokenAmount::zero());
 
@@ -181,6 +184,7 @@ mod miner_actor_test_commitment {
         let old_sector =
             &h.commit_and_prove_sectors(&mut rt, 1, DEFAULT_SECTOR_EXPIRATION as u64, vec![], true)
                 [0];
+        rt.skip_verification_expectations_on_drop();
         let st: State = rt.get_state();
         assert!(st.deadline_cron_active);
 
@@ -205,6 +209,7 @@ mod miner_actor_test_commitment {
                 false,
             );
             expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "already allocated", ret);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -223,6 +228,7 @@ mod miner_actor_test_commitment {
                 false,
             );
             expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "already allocated", ret);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -242,6 +248,7 @@ mod miner_actor_test_commitment {
                 "sealed CID had wrong prefix",
                 ret,
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -261,6 +268,7 @@ mod miner_actor_test_commitment {
                 "unsupported seal proof type",
                 ret,
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -278,6 +286,7 @@ mod miner_actor_test_commitment {
                 "must be after activation",
                 ret,
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -296,6 +305,7 @@ mod miner_actor_test_commitment {
                 "must be after activation",
                 ret,
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -311,6 +321,7 @@ mod miner_actor_test_commitment {
                 false,
             );
             expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "must exceed", ret);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -329,6 +340,7 @@ mod miner_actor_test_commitment {
                 false,
             );
             expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "must exceed", ret);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -352,6 +364,7 @@ mod miner_actor_test_commitment {
                 "invalid expiration",
                 ret,
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -372,6 +385,7 @@ mod miner_actor_test_commitment {
                 "invalid expiration",
                 ret,
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -390,6 +404,7 @@ mod miner_actor_test_commitment {
                 false,
             );
             expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "out of range", ret);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -408,6 +423,7 @@ mod miner_actor_test_commitment {
                 false,
             );
             expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "too old", ret);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -432,6 +448,7 @@ mod miner_actor_test_commitment {
             // reset state back to normal
             st.fee_debt = TokenAmount::zero();
             rt.replace_state(&st);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
 
@@ -456,6 +473,7 @@ mod miner_actor_test_commitment {
             expect_abort_contains_message(ExitCode::USR_FORBIDDEN, "active consensus fault", ret);
             // reset state back to normal
             rt.replace_state(&st);
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
         }
     }
@@ -468,6 +486,8 @@ mod miner_actor_test_commitment {
             let mut h = ActorHarness::new(period_offset);
             h.set_proof_type(proof);
             let mut rt = h.new_runtime();
+            rt.skip_verification_expectations_on_drop();
+
             rt.set_balance(BIG_BALANCE.clone());
             rt.set_received(TokenAmount::zero());
 
@@ -533,6 +553,8 @@ mod miner_actor_test_commitment {
 
         let h = ActorHarness::new(period_offset);
         let mut rt = h.new_runtime();
+        rt.skip_verification_expectations_on_drop();
+
         rt.set_balance(BIG_BALANCE.clone());
         rt.set_received(TokenAmount::zero());
 
@@ -556,6 +578,7 @@ mod miner_actor_test_commitment {
                     true,
                 ),
             );
+            rt.skip_verification_expectations_on_drop();
             rt.reset();
             precommit_params.seal_proof = RegisteredSealProof::StackedDRG32GiBV1P1;
             h.pre_commit_sector_and_get(

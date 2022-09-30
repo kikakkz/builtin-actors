@@ -342,6 +342,7 @@ fn invalid_proof_rejected() {
             ProveCommitConfig::empty(),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     // Too late.
@@ -359,6 +360,7 @@ fn invalid_proof_rejected() {
             ProveCommitConfig::empty(),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     // Too early.
@@ -372,6 +374,7 @@ fn invalid_proof_rejected() {
             ProveCommitConfig::empty(),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     // Set the right epoch for all following tests
@@ -389,6 +392,7 @@ fn invalid_proof_rejected() {
             ProveCommitConfig { verify_deals_exit, ..Default::default() },
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     rt.balance.replace(TokenAmount::from_whole(1_000));
@@ -422,6 +426,7 @@ fn invalid_proof_rejected() {
             ProveCommitConfig::empty(),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
     h.check_state(&rt);
 }
@@ -470,6 +475,7 @@ fn prove_commit_aborts_if_pledge_requirement_not_met() {
             ProveCommitConfig::empty(),
         ),
     );
+    rt.skip_verification_expectations_on_drop();
     rt.reset();
 
     // succeeds with enough free balance (enough to cover 2x IP)
