@@ -101,12 +101,7 @@ mod test_award_block_reward {
         let serialized_params = RawBytes::serialize(params).unwrap();
         let result = rt.call::<RewardActor>(Method::AwardBlockReward as u64, &serialized_params);
 
-        assert_eq!(
-            ExitCode::USR_ILLEGAL_STATE,
-            result
-                .unwrap_err()
-                .exit_code()
-        );
+        assert_eq!(ExitCode::USR_ILLEGAL_STATE, result.unwrap_err().exit_code());
     }
 
     #[test]
@@ -126,14 +121,10 @@ mod test_award_block_reward {
             };
 
             let serialized_params = RawBytes::serialize(params).unwrap();
-            let result = rt.call::<RewardActor>(Method::AwardBlockReward as u64, &serialized_params);
+            let result =
+                rt.call::<RewardActor>(Method::AwardBlockReward as u64, &serialized_params);
 
-            assert_eq!(
-                ExitCode::USR_ILLEGAL_ARGUMENT,
-                result
-                    .unwrap_err()
-                    .exit_code()
-            );
+            assert_eq!(ExitCode::USR_ILLEGAL_ARGUMENT, result.unwrap_err().exit_code());
             rt.reset();
         }
     }

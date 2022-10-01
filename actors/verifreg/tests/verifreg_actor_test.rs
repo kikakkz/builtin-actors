@@ -116,10 +116,7 @@ mod verifiers {
             Method::AddVerifier as MethodNum,
             &RawBytes::serialize(params).unwrap(),
         );
-        expect_abort(
-            ExitCode::USR_ILLEGAL_ARGUMENT,
-            result
-        );
+        expect_abort(ExitCode::USR_ILLEGAL_ARGUMENT, result);
         h.check_state(&rt);
     }
 
@@ -167,10 +164,7 @@ mod verifiers {
             &RawBytes::serialize(params).unwrap(),
         );
 
-        expect_abort(
-            ExitCode::USR_ILLEGAL_ARGUMENT,
-            result
-        );
+        expect_abort(ExitCode::USR_ILLEGAL_ARGUMENT, result);
         h.check_state(&rt);
     }
 

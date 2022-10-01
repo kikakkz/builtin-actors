@@ -1383,10 +1383,7 @@ mod submit_porep_for_bulk_verify_tests {
             &RawBytes::serialize(seal_info).unwrap(),
         );
 
-        expect_abort(
-            ERR_TOO_MANY_PROVE_COMMITS,
-            result
-        );
+        expect_abort(ERR_TOO_MANY_PROVE_COMMITS, result);
 
         h.check_state(&rt);
     }
