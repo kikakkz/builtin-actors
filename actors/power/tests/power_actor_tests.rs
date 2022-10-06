@@ -1052,7 +1052,7 @@ mod cron_batch_proof_verifies_tests {
         h.create_miner_basic(&mut rt, OWNER, OWNER, MINER_1).unwrap();
 
         let info = create_basic_seal_info(0);
-        h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone()).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone(), true).unwrap();
 
         let confirmed_sectors =
             vec![ConfirmedSectorSend { miner: MINER_1, sector_nums: vec![info.sector_id.number] }];
@@ -1070,7 +1070,7 @@ mod cron_batch_proof_verifies_tests {
 
         let infos: Vec<_> = (1..=3).map(create_basic_seal_info).collect();
         infos.iter().for_each(|info| {
-            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone()).unwrap()
+            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone(), true).unwrap()
         });
 
         let sector_id_nums = infos.iter().map(|info| info.sector_id.number).collect();
@@ -1093,7 +1093,7 @@ mod cron_batch_proof_verifies_tests {
             vec![create_basic_seal_info(1), create_basic_seal_info(1), create_basic_seal_info(2)];
 
         infos.iter().for_each(|info| {
-            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone()).unwrap()
+            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone(), true).unwrap()
         });
 
         // however, duplicates will not be sent to the miner as confirmed
@@ -1113,7 +1113,7 @@ mod cron_batch_proof_verifies_tests {
 
         let info = create_basic_seal_info(1);
 
-        h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info, true).unwrap();
 
         h.delete_claim(&mut rt, &MINER_1);
 
@@ -1153,17 +1153,17 @@ mod cron_batch_proof_verifies_tests {
         h.create_miner_basic(&mut rt, OWNER, OWNER, miner3).unwrap();
         h.create_miner_basic(&mut rt, OWNER, OWNER, miner4).unwrap();
 
-        h.submit_porep_for_bulk_verify(&mut rt, miner1, info1.clone()).unwrap();
-        h.submit_porep_for_bulk_verify(&mut rt, miner1, info2.clone()).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner1, info1.clone(), true).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner1, info2.clone(), true).unwrap();
 
-        h.submit_porep_for_bulk_verify(&mut rt, miner2, info3.clone()).unwrap();
-        h.submit_porep_for_bulk_verify(&mut rt, miner2, info4.clone()).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner2, info3.clone(), true).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner2, info4.clone(), true).unwrap();
 
-        h.submit_porep_for_bulk_verify(&mut rt, miner3, info5.clone()).unwrap();
-        h.submit_porep_for_bulk_verify(&mut rt, miner3, info6.clone()).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner3, info5.clone(), true).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner3, info6.clone(), true).unwrap();
 
-        h.submit_porep_for_bulk_verify(&mut rt, miner4, info7.clone()).unwrap();
-        h.submit_porep_for_bulk_verify(&mut rt, miner4, info8.clone()).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner4, info7.clone(), true).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, miner4, info8.clone(), true).unwrap();
 
         // TODO Because read order of keys in a multi-map is not as per insertion order,
         // we have to move around the expected sends
@@ -1207,7 +1207,7 @@ mod cron_batch_proof_verifies_tests {
 
         let infos: Vec<_> = (1..=3).map(create_basic_seal_info).collect();
         infos.iter().for_each(|info| {
-            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone()).unwrap()
+            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone(), true).unwrap()
         });
 
         let res = Ok(vec![true, false, true]);
@@ -1269,7 +1269,7 @@ mod cron_batch_proof_verifies_tests {
 
         let infos: Vec<_> = (1..=3).map(create_basic_seal_info).collect();
         infos.iter().for_each(|info| {
-            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone()).unwrap()
+            h.submit_porep_for_bulk_verify(&mut rt, MINER_1, info.clone(), true).unwrap()
         });
 
         h.expect_query_network_info(&mut rt);
@@ -1331,7 +1331,7 @@ mod submit_porep_for_bulk_verify_tests {
             sector_id: SectorID { number: 0, ..Default::default() },
         };
 
-        h.submit_porep_for_bulk_verify(&mut rt, MINER, info).unwrap();
+        h.submit_porep_for_bulk_verify(&mut rt, MINER, info, true).unwrap();
         let st: State = rt.get_state();
         let store = &rt.store;
         assert!(st.proof_validation_batch.is_some());
@@ -1371,19 +1371,18 @@ mod submit_porep_for_bulk_verify_tests {
 
         // Adding MAX_MINER_PROVE_COMMITS_PER_EPOCH works without error
         for i in 0..MAX_MINER_PROVE_COMMITS_PER_EPOCH {
-            h.submit_porep_for_bulk_verify(&mut rt, MINER, create_basic_seal_info(i)).unwrap();
+            h.submit_porep_for_bulk_verify(&mut rt, MINER, create_basic_seal_info(i), true).unwrap();
         }
 
-        rt.expect_validate_caller_type(vec![Type::Miner]);
-        rt.set_caller(*MINER_ACTOR_CODE_ID, MINER);
-        let seal_info = create_basic_seal_info(MAX_MINER_PROVE_COMMITS_PER_EPOCH);
-
-        let result = rt.call::<PowerActor>(
-            Method::SubmitPoRepForBulkVerify as u64,
-            &RawBytes::serialize(seal_info).unwrap(),
+        expect_abort(
+            ERR_TOO_MANY_PROVE_COMMITS,
+            h.submit_porep_for_bulk_verify(
+                &mut rt,
+                MINER,
+                create_basic_seal_info(MAX_MINER_PROVE_COMMITS_PER_EPOCH),
+                false
+            ),
         );
-
-        expect_abort(ERR_TOO_MANY_PROVE_COMMITS, result);
 
         h.check_state(&rt);
     }
@@ -1411,15 +1410,7 @@ mod submit_porep_for_bulk_verify_tests {
         // delete miner
         h.delete_claim(&mut rt, &MINER);
 
-        rt.expect_validate_caller_type(vec![Type::Miner]);
-        rt.set_caller(*MINER_ACTOR_CODE_ID, MINER);
-
-        let result = rt.call::<PowerActor>(
-            Method::SubmitPoRepForBulkVerify as u64,
-            &RawBytes::serialize(info).unwrap(),
-        );
-
-        expect_abort(ExitCode::USR_FORBIDDEN, result);
+        expect_abort(ExitCode::USR_FORBIDDEN, h.submit_porep_for_bulk_verify(&mut rt, MINER, info, false));
         h.check_state(&rt);
     }
 }
