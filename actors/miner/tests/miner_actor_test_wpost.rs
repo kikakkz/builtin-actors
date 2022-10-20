@@ -104,7 +104,7 @@ fn invalid_submissions() {
 
     let mut h = ActorHarness::new(period_offset);
     let mut rt = h.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     rt.epoch = precommit_epoch;
     rt.balance.replace(BIG_BALANCE.clone());
@@ -138,7 +138,7 @@ fn invalid_submissions() {
             PoStConfig::empty(),
         );
         expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "invalid deadline", result);
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -164,7 +164,7 @@ fn invalid_submissions() {
             "expected proof to be smaller",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -193,7 +193,7 @@ fn invalid_submissions() {
             "too many partitions",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -215,7 +215,7 @@ fn invalid_submissions() {
             PoStConfig::empty(),
         );
         expect_abort_contains_message(ExitCode::USR_NOT_FOUND, "no such partition", result);
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -241,7 +241,7 @@ fn invalid_submissions() {
             "skipped faults contains sectors outside partition",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -267,7 +267,7 @@ fn invalid_submissions() {
             "expected exactly one proof",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -293,7 +293,7 @@ fn invalid_submissions() {
             "proof type StackedDRGWindow8MiBV1 not allowed",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -319,7 +319,7 @@ fn invalid_submissions() {
             "expected proof of type",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -347,7 +347,7 @@ fn invalid_submissions() {
             "expected proof to be smaller",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -373,7 +373,7 @@ fn invalid_submissions() {
             "bytes of randomness",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -403,7 +403,7 @@ fn invalid_submissions() {
         //      deadline 2.
         expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "invalid deadline", result);
         rt.epoch = dlinfo.current_epoch;
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -429,7 +429,7 @@ fn invalid_submissions() {
             "expected chain commit epoch",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -455,7 +455,7 @@ fn invalid_submissions() {
             "must be less than the current epoch",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -481,7 +481,7 @@ fn invalid_submissions() {
             "randomness mismatched",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -516,7 +516,7 @@ fn duplicate_proof_rejected() {
     h.set_proof_type(RegisteredSealProof::StackedDRG2KiBV1P1);
 
     let mut rt = h.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     rt.epoch = precommit_epoch;
     rt.balance.replace(BIG_BALANCE.clone());
@@ -587,7 +587,7 @@ fn duplicate_proof_rejected() {
         "partition already proven",
         result,
     );
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
     rt.reset();
 
     // Advance to end-of-deadline cron to verify no penalties.
@@ -604,7 +604,7 @@ fn duplicate_proof_rejected_with_many_partitions() {
     h.set_proof_type(RegisteredSealProof::StackedDRG2KiBV1P1);
 
     let mut rt = h.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     rt.epoch = precommit_epoch;
     rt.balance.replace(BIG_BALANCE.clone());
@@ -676,7 +676,7 @@ fn duplicate_proof_rejected_with_many_partitions() {
             "partition already proven",
             result,
         );
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
     {
@@ -784,7 +784,7 @@ fn skipped_faults_adjust_power() {
     h.set_proof_type(RegisteredSealProof::StackedDRG2KiBV1P1);
 
     let mut rt = h.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     rt.epoch = precommit_epoch;
     rt.balance.replace(BIG_BALANCE.clone());
@@ -848,7 +848,7 @@ fn skipped_faults_adjust_power() {
         PoStConfig::with_expected_power_delta(&pwr_delta),
     );
     expect_abort_contains_message(ExitCode::USR_ILLEGAL_ARGUMENT, "no active sectors", result);
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
     rt.reset();
 
     // The second sector is detected faulty but pays nothing yet.
@@ -1317,5 +1317,5 @@ fn bad_post_fails_when_verified() {
     );
 
     h.check_state(&rt);
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 }

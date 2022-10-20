@@ -466,7 +466,7 @@ impl MockRuntime {
         self.expectations.borrow_mut().verify()
     }
 
-    pub fn skip_verification_expectations_on_drop(&mut self) {
+    pub fn skip_verification_on_drop(&mut self) {
         self.expectations.borrow_mut().skip_verification_on_drop();
     }
 

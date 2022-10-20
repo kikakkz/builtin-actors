@@ -172,7 +172,7 @@ fn successfully_clear_all_control_addresses() {
 #[test]
 fn fails_if_control_addresses_length_exceeds_maximum_limit() {
     let (h, mut rt) = setup();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     let control_addresses =
         (0..=rt.policy().max_control_addresses as u64).map(Address::new_id).collect_vec();
@@ -189,7 +189,7 @@ fn fails_if_control_addresses_length_exceeds_maximum_limit() {
 #[test]
 fn fails_if_unable_to_resolve_control_address() {
     let (h, mut rt) = setup();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     let control_address = new_bls_addr(42);
     let result = h.change_worker_address(&mut rt, h.worker, vec![control_address]);
@@ -201,7 +201,7 @@ fn fails_if_unable_to_resolve_control_address() {
 #[test]
 fn fails_if_unable_to_resolve_worker_address() {
     let (h, mut rt) = setup();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     let new_worker = new_bls_addr(42);
     let result = h.change_worker_address(&mut rt, new_worker, vec![]);
@@ -213,7 +213,7 @@ fn fails_if_unable_to_resolve_worker_address() {
 #[test]
 fn fails_if_worker_public_key_is_not_bls_but_id() {
     let (mut h, mut rt) = setup();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     let new_worker = Address::new_id(999);
     h.worker_key = Address::new_id(505);
@@ -227,7 +227,7 @@ fn fails_if_worker_public_key_is_not_bls_but_id() {
 #[test]
 fn fails_if_worker_public_key_is_not_bls_but_secp() {
     let (mut h, mut rt) = setup();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     let new_worker = Address::new_id(999);
     h.worker_key = Address::new_secp256k1(&[0x42; 65]).unwrap();

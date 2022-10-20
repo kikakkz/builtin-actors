@@ -519,7 +519,7 @@ fn update_expiration2_failure_cases() {
             partition_index,
         );
         rt.replace_state(&state);
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 
@@ -559,7 +559,7 @@ fn update_expiration2_failure_cases() {
             partition_index,
         );
         rt.replace_state(&state);
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
     /* Bad claim -- max term too small for expiration */
@@ -603,7 +603,7 @@ fn update_expiration2_failure_cases() {
             partition_index,
         );
         rt.replace_state(&state);
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         rt.reset();
     }
 }

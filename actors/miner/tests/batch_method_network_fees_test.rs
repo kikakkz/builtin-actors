@@ -20,7 +20,7 @@ lazy_static! {
 fn insufficient_funds_for_aggregated_prove_commit_network_fee() {
     let actor = ActorHarness::new(*PERIOD_OFFSET);
     let mut rt = actor.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
     rt.set_balance(BIG_BALANCE.clone());
     let precommit_epoch = *PERIOD_OFFSET + 1;
     rt.set_epoch(precommit_epoch);
@@ -71,7 +71,7 @@ fn insufficient_funds_for_aggregated_prove_commit_network_fee() {
 fn insufficient_funds_for_batch_precommit_network_fee() {
     let actor = ActorHarness::new(*PERIOD_OFFSET);
     let mut rt = actor.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
     rt.set_balance(BIG_BALANCE.clone());
     let precommit_epoch = *PERIOD_OFFSET + 1;
     rt.set_epoch(precommit_epoch);
@@ -120,7 +120,7 @@ fn insufficient_funds_for_batch_precommit_network_fee() {
 fn insufficient_funds_for_batch_precommit_in_combination_of_fee_debt_and_network_fee() {
     let actor = ActorHarness::new(*PERIOD_OFFSET);
     let mut rt = actor.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
     rt.set_balance(BIG_BALANCE.clone());
     let precommit_epoch = *PERIOD_OFFSET + 1;
     rt.set_epoch(precommit_epoch);
@@ -176,7 +176,7 @@ fn insufficient_funds_for_batch_precommit_in_combination_of_fee_debt_and_network
 fn enough_funds_for_fee_debt_and_network_fee_but_not_for_pcd() {
     let actor = ActorHarness::new(*PERIOD_OFFSET);
     let mut rt = actor.new_runtime();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
     rt.set_balance(BIG_BALANCE.clone());
     let precommit_epoch = *PERIOD_OFFSET + 1;
     rt.set_epoch(precommit_epoch);

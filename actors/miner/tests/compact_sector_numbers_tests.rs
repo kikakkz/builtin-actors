@@ -102,7 +102,7 @@ mod compact_sector_numbers_test {
     fn fail_if_caller_is_not_among_caller_worker_or_control_addresses() {
         // Create a sector.
         let (mut h, mut rt) = setup();
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
 
         let all_sectors =
             h.commit_and_prove_sectors(&mut rt, 1, DEFAULT_SECTOR_EXPIRATION, vec![], true);
@@ -125,7 +125,7 @@ mod compact_sector_numbers_test {
     #[test]
     fn sector_number_range_limits() {
         let (h, mut rt) = setup();
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
 
         // Limits ok
         h.compact_sector_numbers(&mut rt, h.worker, bitfield_from_slice(&[0, MAX_SECTOR_NUMBER]));
@@ -145,7 +145,7 @@ mod compact_sector_numbers_test {
     #[test]
     fn compacting_no_sector_numbers_aborts() {
         let (h, mut rt) = setup();
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
 
         expect_abort(
             ExitCode::USR_ILLEGAL_ARGUMENT,

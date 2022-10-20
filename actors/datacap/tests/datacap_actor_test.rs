@@ -81,7 +81,7 @@ mod mint {
     #[test]
     fn requires_whole_tokens() {
         let (mut rt, h) = make_harness();
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
 
         let amt = TokenAmount::from_atto(100);
         expect_abort_contains_message(
@@ -133,7 +133,7 @@ mod transfer {
     #[test]
     fn only_governor_allowed() {
         let (mut rt, h) = make_harness();
-        rt.skip_verification_expectations_on_drop();
+        rt.skip_verification_on_drop();
         let operator_data = RawBytes::new(vec![1, 2, 3, 4]);
 
         let amt = TokenAmount::from_whole(1);

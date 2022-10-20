@@ -187,7 +187,7 @@ fn fails_to_compact_partitions_with_unproven_sectors() {
 #[test]
 fn fails_if_deadline_out_of_range() {
     let (h, mut rt) = setup();
-    rt.skip_verification_expectations_on_drop();
+    rt.skip_verification_on_drop();
 
     let w_post_period_deadlines = rt.policy().wpost_period_deadlines;
     let result = h.compact_partitions(&mut rt, w_post_period_deadlines, BitField::default());
