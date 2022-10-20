@@ -447,7 +447,7 @@ impl Harness {
         rt: &mut MockRuntime,
         miner_address: Address,
         seal_info: SealVerifyInfo,
-        expect_success: bool
+        expect_success: bool,
     ) -> Result<(), ActorError> {
         if expect_success {
             rt.expect_gas_charge(GAS_ON_SUBMIT_VERIFY_SEAL);

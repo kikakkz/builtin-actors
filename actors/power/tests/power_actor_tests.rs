@@ -1371,7 +1371,8 @@ mod submit_porep_for_bulk_verify_tests {
 
         // Adding MAX_MINER_PROVE_COMMITS_PER_EPOCH works without error
         for i in 0..MAX_MINER_PROVE_COMMITS_PER_EPOCH {
-            h.submit_porep_for_bulk_verify(&mut rt, MINER, create_basic_seal_info(i), true).unwrap();
+            h.submit_porep_for_bulk_verify(&mut rt, MINER, create_basic_seal_info(i), true)
+                .unwrap();
         }
 
         expect_abort(
@@ -1380,7 +1381,7 @@ mod submit_porep_for_bulk_verify_tests {
                 &mut rt,
                 MINER,
                 create_basic_seal_info(MAX_MINER_PROVE_COMMITS_PER_EPOCH),
-                false
+                false,
             ),
         );
 
@@ -1410,7 +1411,10 @@ mod submit_porep_for_bulk_verify_tests {
         // delete miner
         h.delete_claim(&mut rt, &MINER);
 
-        expect_abort(ExitCode::USR_FORBIDDEN, h.submit_porep_for_bulk_verify(&mut rt, MINER, info, false));
+        expect_abort(
+            ExitCode::USR_FORBIDDEN,
+            h.submit_porep_for_bulk_verify(&mut rt, MINER, info, false),
+        );
         h.check_state(&rt);
     }
 }
