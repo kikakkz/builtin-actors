@@ -187,8 +187,6 @@ fn fails_to_compact_partitions_with_unproven_sectors() {
 #[test]
 fn fails_if_deadline_out_of_range() {
     let (h, mut rt) = setup();
-    rt.skip_verification_on_drop();
-
     let w_post_period_deadlines = rt.policy().wpost_period_deadlines;
     let result = h.compact_partitions(&mut rt, w_post_period_deadlines, BitField::default());
     expect_abort_contains_message(
@@ -196,7 +194,7 @@ fn fails_if_deadline_out_of_range() {
         &format!("invalid deadline {w_post_period_deadlines}"),
         result,
     );
-
+    rt.reset();
     h.check_state(&rt);
 }
 

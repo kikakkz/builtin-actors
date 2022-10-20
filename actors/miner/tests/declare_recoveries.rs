@@ -54,7 +54,6 @@ fn recovery_must_pay_back_fee_debt() {
     let one_sector =
         h.commit_and_prove_sectors(&mut rt, 1, DEFAULT_SECTOR_EXPIRATION as u64, vec![], true);
 
-    rt.skip_verification_on_drop();
     // advance to first proving period and submit so we'll have time to declare the fault next cycle
     h.advance_and_submit_posts(&mut rt, &one_sector);
 

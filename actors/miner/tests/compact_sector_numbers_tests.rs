@@ -102,8 +102,6 @@ mod compact_sector_numbers_test {
     fn fail_if_caller_is_not_among_caller_worker_or_control_addresses() {
         // Create a sector.
         let (mut h, mut rt) = setup();
-        rt.skip_verification_on_drop();
-
         let all_sectors =
             h.commit_and_prove_sectors(&mut rt, 1, DEFAULT_SECTOR_EXPIRATION, vec![], true);
 
@@ -118,15 +116,13 @@ mod compact_sector_numbers_test {
                 bitfield_from_slice(&[target_sector_num, target_sector_num + 1]),
             ),
         );
-
+        rt.reset();
         check_state_invariants_from_mock_runtime(&rt);
     }
 
     #[test]
     fn sector_number_range_limits() {
         let (h, mut rt) = setup();
-        rt.skip_verification_on_drop();
-
         // Limits ok
         h.compact_sector_numbers(&mut rt, h.worker, bitfield_from_slice(&[0, MAX_SECTOR_NUMBER]));
 
@@ -139,19 +135,19 @@ mod compact_sector_numbers_test {
                 bitfield_from_slice(&[MAX_SECTOR_NUMBER + 1]),
             ),
         );
+        rt.reset();
         check_state_invariants_from_mock_runtime(&rt);
     }
 
     #[test]
     fn compacting_no_sector_numbers_aborts() {
         let (h, mut rt) = setup();
-        rt.skip_verification_on_drop();
-
         expect_abort(
             ExitCode::USR_ILLEGAL_ARGUMENT,
             // compact nothing
             h.compact_sector_numbers_raw(&mut rt, h.worker, bitfield_from_slice(&[])),
         );
+        rt.reset();
         check_state_invariants_from_mock_runtime(&rt);
     }
 }

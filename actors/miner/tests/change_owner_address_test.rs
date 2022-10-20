@@ -97,9 +97,9 @@ fn proposed_must_be_valid() {
     rt.set_caller(*MULTISIG_ACTOR_CODE_ID, h.owner);
 
     for nominee in nominees {
-        rt.skip_verification_on_drop();
         let result = h.change_owner_address(&mut rt, nominee);
         expect_abort(ExitCode::USR_ILLEGAL_ARGUMENT, result);
+        rt.reset();
     }
 
     h.check_state(&rt);

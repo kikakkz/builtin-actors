@@ -123,12 +123,12 @@ mod verifiers {
     #[test]
     fn add_verifier_rejects_root() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance = verifier_allowance(&rt);
         expect_abort(
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_verifier(&mut rt, &ROOT_ADDR, &allowance),
         );
+        rt.reset();
         h.check_state(&rt);
     }
 
@@ -276,7 +276,6 @@ mod clients {
     #[test]
     fn verifier_allowance_exhausted() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance = client_allowance(&rt);
         // Verifier only has allowance for one client.
         h.add_verifier(&mut rt, &VERIFIER, &allowance).unwrap();
@@ -286,7 +285,7 @@ mod clients {
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_client(&mut rt, &VERIFIER, &CLIENT2, &allowance),
         );
-
+        rt.reset();
         h.assert_verifier_allowance(&rt, &VERIFIER, &DataCap::zero());
         h.check_state(&rt);
     }
@@ -324,7 +323,6 @@ mod clients {
     #[test]
     fn rejects_unresolved_address() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance_verifier = verifier_allowance(&rt);
         let allowance_client = client_allowance(&rt);
         h.add_verifier(&mut rt, &VERIFIER, &allowance_verifier).unwrap();
@@ -345,13 +343,13 @@ mod clients {
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_client(&mut rt, &VERIFIER, &client, &allowance_client),
         );
+        rt.reset();
         h.check_state(&rt);
     }
 
     #[test]
     fn rejects_allowance_below_minimum() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance_verifier = verifier_allowance(&rt);
         h.add_verifier(&mut rt, &VERIFIER, &allowance_verifier).unwrap();
 
@@ -360,6 +358,7 @@ mod clients {
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_client(&mut rt, &VERIFIER, &CLIENT, &allowance),
         );
+        rt.reset();
         h.check_state(&rt);
     }
 
@@ -387,7 +386,6 @@ mod clients {
     #[test]
     fn rejects_allowance_greater_than_verifier_cap() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance_verifier = verifier_allowance(&rt);
         h.add_verifier(&mut rt, &VERIFIER, &allowance_verifier).unwrap();
 
@@ -396,13 +394,13 @@ mod clients {
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_client(&mut rt, &VERIFIER, &h.root, &allowance),
         );
+        rt.reset();
         h.check_state(&rt);
     }
 
     #[test]
     fn rejects_root_as_client() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance_verifier = verifier_allowance(&rt);
         let allowance_client = client_allowance(&rt);
         h.add_verifier(&mut rt, &VERIFIER, &allowance_verifier).unwrap();
@@ -410,13 +408,13 @@ mod clients {
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_client(&mut rt, &VERIFIER, &h.root, &allowance_client),
         );
+        rt.reset();
         h.check_state(&rt);
     }
 
     #[test]
     fn rejects_verifier_as_client() {
         let (h, mut rt) = new_harness();
-        rt.skip_verification_on_drop();
         let allowance_verifier = verifier_allowance(&rt);
         let allowance_client = client_allowance(&rt);
         h.add_verifier(&mut rt, &VERIFIER, &allowance_verifier).unwrap();
@@ -425,13 +423,13 @@ mod clients {
             h.add_client(&mut rt, &VERIFIER, &VERIFIER, &allowance_client),
         );
         rt.reset();
-        rt.skip_verification_on_drop();
 
         h.add_verifier(&mut rt, &VERIFIER2, &allowance_verifier).unwrap();
         expect_abort(
             ExitCode::USR_ILLEGAL_ARGUMENT,
             h.add_client(&mut rt, &VERIFIER, &VERIFIER2, &allowance_client),
         );
+        rt.reset();
         h.check_state(&rt);
     }
 }
