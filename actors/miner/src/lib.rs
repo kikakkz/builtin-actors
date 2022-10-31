@@ -527,7 +527,7 @@ impl Actor {
 
             // Verify the chain commit randomness
             let comm_rand = rt.get_randomness_from_tickets(
-                DomainSeparationTag::PoStChainCommit,
+                DomainSeparationTag::PoStChainCommit as i64,
                 params.chain_commit_epoch,
                 &[],
             )?;
@@ -775,12 +775,12 @@ impl Actor {
                 ));
             }
             let sv_info_randomness = rt.get_randomness_from_tickets(
-                DomainSeparationTag::SealRandomness,
+                DomainSeparationTag::SealRandomness as i64,
                 precommit.info.seal_rand_epoch,
                 &receiver_bytes,
             )?;
             let sv_info_interactive_randomness = rt.get_randomness_from_beacon(
-                DomainSeparationTag::InteractiveSealChallengeSeed,
+                DomainSeparationTag::InteractiveSealChallengeSeed as i64,
                 interactive_epoch,
                 &receiver_bytes,
             )?;
@@ -3677,7 +3677,7 @@ where
     // Regenerate challenge randomness, which must match that generated for the proof.
     let entropy = serialize(&rt.message().receiver(), "address for window post challenge")?;
     let randomness: PoStRandomness = rt.get_randomness_from_beacon(
-        DomainSeparationTag::WindowedPoStChallengeSeed,
+        DomainSeparationTag::WindowedPoStChallengeSeed as i64,
         challenge_epoch,
         &entropy,
     )?;
@@ -3731,12 +3731,12 @@ where
     };
     let entropy = serialize(&rt.message().receiver(), "address for get verify info")?;
     let randomness: SealRandomness = rt.get_randomness_from_tickets(
-        DomainSeparationTag::SealRandomness,
+        DomainSeparationTag::SealRandomness as i64,
         params.seal_rand_epoch,
         &entropy,
     )?;
     let interactive_randomness: InteractiveSealRandomness = rt.get_randomness_from_beacon(
-        DomainSeparationTag::InteractiveSealChallengeSeed,
+        DomainSeparationTag::InteractiveSealChallengeSeed as i64,
         params.interactive_epoch,
         &entropy,
     )?;

@@ -388,7 +388,7 @@ pub struct ExpectComputeUnsealedSectorCid {
 
 #[derive(Clone, Debug)]
 pub struct ExpectRandomness {
-    tag: DomainSeparationTag,
+    tag: i64,
     epoch: ChainEpoch,
     entropy: Vec<u8>,
     out: Randomness,
@@ -669,7 +669,7 @@ impl<BS: Blockstore> MockRuntime<BS> {
 
     pub fn expect_get_randomness_from_tickets(
         &mut self,
-        tag: DomainSeparationTag,
+        tag: i64,
         epoch: ChainEpoch,
         entropy: Vec<u8>,
         out: Randomness,
@@ -681,7 +681,7 @@ impl<BS: Blockstore> MockRuntime<BS> {
     #[allow(dead_code)]
     pub fn expect_get_randomness_from_beacon(
         &mut self,
-        tag: DomainSeparationTag,
+        tag: i64,
         epoch: ChainEpoch,
         entropy: Vec<u8>,
         out: Randomness,
@@ -943,7 +943,7 @@ impl<BS: Blockstore> Runtime<Rc<BS>> for MockRuntime<BS> {
 
     fn get_randomness_from_tickets(
         &self,
-        tag: DomainSeparationTag,
+        tag: i64,
         epoch: ChainEpoch,
         entropy: &[u8],
     ) -> Result<Randomness, ActorError> {
@@ -976,7 +976,7 @@ impl<BS: Blockstore> Runtime<Rc<BS>> for MockRuntime<BS> {
 
     fn get_randomness_from_beacon(
         &self,
-        tag: DomainSeparationTag,
+        tag: i64,
         epoch: ChainEpoch,
         entropy: &[u8],
     ) -> Result<Randomness, ActorError> {
