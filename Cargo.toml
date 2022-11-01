@@ -37,7 +37,7 @@ num-traits = "0.2.15"
 clap = { version = "3.2.3", features = ["derive"] }
 
 [features]
-default = [] ## translates to mainnet
+default = [ "m2-native" ] ## translates to mainnet
 mainnet = []
 caterpillarnet = []
 butterflynet = []

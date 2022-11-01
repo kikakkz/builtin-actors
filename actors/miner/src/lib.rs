@@ -3874,6 +3874,7 @@ where
         .resolve_address(&raw)
         .ok_or_else(|| actor_error!(illegal_argument, "unable to resolve address: {}", raw))?;
 
+    /*
     let owner_code = rt
         .get_actor_code_cid(&resolved)
         .ok_or_else(|| actor_error!(illegal_argument, "no code for address: {}", resolved))?;
@@ -3891,6 +3892,7 @@ where
             owner_code
         ));
     }
+    */
 
     Ok(Address::new_id(resolved))
 }
@@ -3906,6 +3908,7 @@ where
         .resolve_address(&raw)
         .ok_or_else(|| actor_error!(illegal_argument, "unable to resolve address: {}", raw))?;
 
+    /*
     let worker_code = rt
         .get_actor_code_cid(&resolved)
         .ok_or_else(|| actor_error!(illegal_argument, "no code for address: {}", resolved))?;
@@ -3934,6 +3937,7 @@ where
             ));
         }
     }
+    */
     Ok(Address::new_id(resolved))
 }
 

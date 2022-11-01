@@ -135,7 +135,7 @@ where
             Ok(())
         } else {
             Err(actor_error!(forbidden;
-                "caller {} is not one of supported", caller_addr
+                "caller {} is not one of supported actor type is", caller_addr
             ))
         }
     }
@@ -155,7 +155,7 @@ where
             Ok(())
         } else {
             Err(actor_error!(forbidden;
-                "caller's namespace {} is not one of supported", caller_addr
+                "caller's namespace {} is not one of supported actor type namespace", caller_addr
             ))
         }
     }
@@ -164,6 +164,9 @@ where
     where
         I: IntoIterator<Item = &'a Type>,
     {
+        self.caller_validated = true;
+        Ok(())
+        /*
         self.assert_not_validated()?;
         let caller_cid = {
             let caller_addr = self.message().caller();
@@ -172,13 +175,17 @@ where
         };
 
         match self.resolve_builtin_actor_type(&caller_cid) {
-            Some(typ) if types.into_iter().any(|t| *t == typ) => {
-                self.caller_validated = true;
-                Ok(())
+            Some(typ) => {
+                if types.into_iter().any(|t| *t == typ) {
+                    self.caller_validated = true;
+                    return Ok(());
+                }
+                Err(actor_error!(forbidden; "caller cid {} type {:?} not one of supported type", caller_cid, typ))
             }
             _ => Err(actor_error!(forbidden;
-                    "caller cid type {} not one of supported", caller_cid)),
+                    "caller cid type {} not one of supported actor type caller", caller_cid)),
         }
+        */
     }
 
     fn current_balance(&self) -> TokenAmount {
